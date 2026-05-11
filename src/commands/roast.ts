@@ -46,7 +46,8 @@ export const data = new SlashCommandBuilder()
         { name: "Indonesia", value: "id" },
         { name: "Tolaki", value: "tolaki" },
         { name: "Hokkien", value: "hokkien" },
-        { name: "Khek (Hakka)", value: "khek" }
+        { name: "Khek (Hakka)", value: "khek" },
+        { name: "中文 (Chinese)", value: "zh" }
       )
   )
   .addStringOption((o) =>
@@ -93,7 +94,7 @@ export async function execute(
   const reason = interaction.options.getString("reason") ?? "existing";
   const heat = interaction.options.getInteger("heat") ?? 2;
   const lang = interaction.options.getString("lang") ?? "en";
-  const style = interaction.options.getString("style") ?? "embed";
+  const style = interaction.options.getString("style") ?? "message";
 
   await interaction.deferReply();
 

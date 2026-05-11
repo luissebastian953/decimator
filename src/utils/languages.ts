@@ -64,6 +64,17 @@ export const LANGUAGES: Record<string, LanguageConfig> = {
       "Ngài m̀ voi mà ngi, yîn-vi ngi thâng m̀ tó.",
     ],
   },
+  zh: {
+    key: "zh",
+    label: "中文",
+    emoji: "🇨🇳",
+    promptInstruction: loadPrompt("lang-zh"),
+    fallbacks: [
+      "你他妈真是废物。",
+      "看看你这副德行，连条狗都不如。",
+      "你存在的唯一意义就是让别人感觉自己还不错。",
+    ],
+  },
 };
 
 export function getLanguage(key: string): LanguageConfig {
