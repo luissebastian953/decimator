@@ -48,6 +48,15 @@ export const data = new SlashCommandBuilder()
         { name: "Hokkien", value: "hokkien" },
         { name: "Khek (Hakka)", value: "khek" }
       )
+  )
+  .addStringOption((o) =>
+    o
+      .setName("style")
+      .setDescription("Response style")
+      .addChoices(
+        { name: "Embed", value: "embed" },
+        { name: "Message", value: "message" }
+      )
   );
 
 export async function execute(
@@ -84,6 +93,7 @@ export async function execute(
   const reason = interaction.options.getString("reason") ?? "existing";
   const heat = interaction.options.getInteger("heat") ?? 2;
   const lang = interaction.options.getString("lang") ?? "en";
+  const style = interaction.options.getString("style") ?? "embed";
 
   await interaction.deferReply();
 
@@ -98,6 +108,11 @@ export async function execute(
   };
 
   const roast = await generateRoast(context, heat, lang);
+
+  if (style === "message") {
+    return interaction.editReply({ content: roast });
+  }
+
   const language = getLanguage(lang);
 
   const embed = new EmbedBuilder()
