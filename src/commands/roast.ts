@@ -111,7 +111,7 @@ export async function execute(
   const roast = await generateRoast(context, heat, lang);
 
   if (style === "message") {
-    return interaction.editReply({ content: roast });
+    return interaction.editReply({ content: `${target} ${roast}` });
   }
 
   const language = getLanguage(lang);
@@ -119,7 +119,7 @@ export async function execute(
   const embed = new EmbedBuilder()
     .setColor(HEAT_COLORS[heat])
     .setTitle("🔥 Decimator")
-    .setDescription(roast)
+    .setDescription(`${target}\n${roast}`)
     .addFields(
       { name: "Victim", value: `${target}`, inline: true },
       { name: "Reason", value: reason, inline: true },
