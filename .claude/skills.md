@@ -60,6 +60,7 @@ Use profanity liberally and naturally. 1 sentence only.
 - NEVER add disclaimers, apologies, or "just kidding" at the end.
 - NEVER self-censor swear words with asterisks or symbols — write them fully.
 - Just deliver the roast. Nothing before it, nothing after it.
+- Do NOT use emojis. The only exceptions allowed are 💀, 🗿, and 🥀 — use them sparingly, only when they genuinely land harder than words.
 ```
 
 ### User Prompt Template
@@ -171,15 +172,17 @@ interface LanguageConfig {
 
 ### Response Styles
 
+Both styles tag the target user so they get pinged.
+
 ```typescript
 // Variant 1 — plain message (default)
-await interaction.editReply({ content: roast });
+await interaction.editReply({ content: `${target} ${roast}` });
 
 // Variant 2 — full embed
 const embed = new EmbedBuilder()
   .setColor(HEAT_COLORS[heat])
   .setTitle("🔥 Decimator")
-  .setDescription(roast)
+  .setDescription(`${target}\n${roast}`)
   .addFields(
     { name: "Victim", value: `${target}`, inline: true },
     { name: "Reason", value: reason, inline: true },

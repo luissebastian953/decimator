@@ -161,8 +161,8 @@ Work through the files in this order:
   4. `deferReply()` — LLM calls take a few seconds
   5. Gather target context from guild member cache
   6. Call `generateRoast()` with context + selected language
-  7. If style is `message` → `editReply({ content: roast })`
-  8. If style is `embed` → build `EmbedBuilder` with color-coded heat, victim, reason, language flag, footer → `editReply({ embeds: [embed] })`
+  7. If style is `message` → `editReply({ content: \`${target} ${roast}\` })`
+  8. If style is `embed` → build `EmbedBuilder` with `${target}\n${roast}` as description, color-coded heat, victim, reason, language flag, footer → `editReply({ embeds: [embed] })`
 
 ### 7. `src/deploy-commands.ts`
 - Import command data and call `Routes.applicationGuildCommands()` to register
