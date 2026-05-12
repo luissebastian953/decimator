@@ -1,20 +1,15 @@
-# Decimator 🔥
+# Decimator
 
-A Discord roast bot powered by Claude AI. Use `/roast` to generate a personalized roast of any server member with configurable heat level and language.
+A Discord bot powered by Claude AI. Roast server members or get cold, honest explanations — in multiple languages.
 
-## Features
+## Commands
 
-- **3 heat levels** — Mild, Spicy, Nuclear
-- **5 languages** — English, Bahasa Indonesia, Tolaki, Hokkien, Khek (Hakka)
-- **Personalized roasts** — uses target's display name, status, account age, roles, and join date as ammo
-- **Cooldown system** — per-user cooldown to prevent spam
-- **Channel lock** — optionally restrict roasts to a designated channel
-- **Graceful fallback** — pre-written roasts per language if the API call fails
+### `/roast`
 
-## Usage
+Generates a personalized roast of a target member. Pings the target on delivery.
 
 ```
-/roast target:@user [reason] [heat:1-3] [lang:en|id|tolaki|hokkien|khek]
+/roast target:@user [reason] [heat:1-3] [lang] [style]
 ```
 
 | Option | Description | Default |
@@ -23,6 +18,29 @@ A Discord roast bot powered by Claude AI. Use `/roast` to generate a personalize
 | `reason` | Why they're getting roasted | "existing" |
 | `heat` | 1 = Mild, 2 = Spicy, 3 = Nuclear | 2 |
 | `lang` | Roast language | en |
+| `style` | `message` (plain) or `embed` | message |
+
+### `/explain`
+
+Cold, passive-aggressive explanation of a topic or person.
+
+```
+/explain [prompt] [target:@user]
+```
+
+At least one of `prompt` or `target` must be provided. Both can be combined.
+
+## Languages
+
+| Key | Language |
+|---|---|
+| `en` | English |
+| `id` | Bahasa Indonesia |
+| `zh` | 中文 (Mandarin) |
+| `ar` | العربية (Arabic) |
+| `tolaki` | Tolaki |
+| `hokkien` | Hokkien |
+| `khek` | Khek (Hakka) |
 
 ## Setup
 
@@ -33,8 +51,6 @@ pnpm install
 ```
 
 ### 2. Configure environment
-
-Copy `.env` and fill in the values:
 
 ```env
 DISCORD_TOKEN=        # Bot token from Discord Developer Portal
@@ -48,6 +64,7 @@ ROAST_COOLDOWN=30     # Seconds between roasts per user
 ### 3. Invite the bot
 
 In the [Discord Developer Portal](https://discord.com/developers/applications):
+- **Bot** tab → enable **Server Members Intent** and **Presence Intent**
 - **OAuth2 → URL Generator** → Scopes: `bot`, `applications.commands`
 - Permissions: Send Messages, Use Slash Commands, Embed Links
 - Open the generated URL and authorize the bot to your server
@@ -55,7 +72,7 @@ In the [Discord Developer Portal](https://discord.com/developers/applications):
 ### 4. Register commands & run
 
 ```bash
-pnpm run deploy   # Register /roast with Discord (run once)
+pnpm run deploy   # Register slash commands with Discord (run once, re-run when commands change)
 pnpm dev          # Start in development mode
 ```
 
@@ -73,7 +90,7 @@ pnpm dev          # Start in development mode
 
 ## Prompts
 
-All system prompts are stored as plain markdown files in `prompts/` — edit them without touching TypeScript:
+All system prompts live in `prompts/` — edit them without touching TypeScript, restart the bot to apply:
 
 ```
 prompts/
@@ -81,8 +98,11 @@ prompts/
 ├── heat-2.md          # Spicy tone
 ├── heat-3.md          # Nuclear tone
 ├── critical-rules.md  # Applied to all heat levels
+├── explain.md         # /explain tone
 ├── lang-en.md
 ├── lang-id.md
+├── lang-zh.md
+├── lang-ar.md
 ├── lang-tolaki.md
 ├── lang-hokkien.md
 └── lang-khek.md
@@ -94,7 +114,8 @@ prompts/
 1. Push to GitHub
 2. [railway.app](https://railway.app) → New Project → Deploy from GitHub
 3. Add env vars in the Variables tab
-4. Set start command: `pnpm build && pnpm start`
+4. Build command: `pnpm build` — Start command: `pnpm start`
+5. Run `pnpm run deploy` locally after each command definition change
 
 **Fly.io**
 ```bash
