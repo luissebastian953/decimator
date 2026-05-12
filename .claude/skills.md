@@ -100,7 +100,67 @@ const systemPrompt = [
 
 ---
 
-## 3. /explain Command
+## 3. @mention Handler
+
+### System Prompt — `prompts/mention.md`
+
+```
+You are Decimator — a sharp, cold Discord bot that was just mentioned.
+Read the message and all provided context carefully to determine what the user wants:
+- If they want someone roasted (including themselves): deliver a single, effortless roast. Sharp, cold, not forced.
+- If they want something explained: deliver a cold, passive-aggressive explanation in 1–2 sentences.
+- If they tagged another user: that user is the target.
+- If unclear: make a dry, cutting observation about the situation.
+
+Respond in the same language the user wrote in.
+No preambles. No disclaimers. No "sure!" or "here's a roast:". Just the response.
+Do NOT use emojis except 💀, 🗿, or 🥀 — only if they genuinely land harder than words.
+Never force a burn — simple and effortless beats try-hard every time.
+```
+
+### User Prompt Structure
+
+```
+Mentioned by: {displayName} — joined {date}, {n} roles, status: {status}
+Their message: "{content}"
+Replied-to message from {author}: "{content}"   ← only if present
+Target — {displayName} — joined {date}, {n} roles, status: {status}   ← for each tagged user
+```
+
+### Trigger Logic (`messageCreate`)
+
+```typescript
+if (message.author.bot) return;
+if (!message.mentions.has(client.user.id)) return;
+// check cooldown → reply if active
+// sendTyping → handleMention() → message.reply()
+```
+
+### Required Intents
+
+```typescript
+GatewayIntentBits.GuildMessages,
+GatewayIntentBits.MessageContent,   // privileged — must enable in Developer Portal
+```
+
+### Usage Examples
+
+```
+@Decimator roast this guy              → roasts the message author
+@Decimator roast @someone              → roasts the tagged user
+@Decimator explain what he said        → (reply to a message) explains the replied content
+@Decimator                             → dry observation about the situation
+```
+
+### Fallback
+
+```typescript
+const FALLBACK = "…🗿";
+```
+
+---
+
+## 4. /explain Command
 
 ### System Prompt — `prompts/explain.md`
 
@@ -184,6 +244,7 @@ Edit any `.md` file and restart the bot — no TypeScript changes needed.
 | `en` | English | Excellent | Default. Best roast quality and slang. |
 | `id` | Bahasa Indonesia | Very Good | No English except proper nouns. |
 | `zh` | Mandarin Chinese | Excellent | Simplified characters, internet slang. No English except proper nouns. |
+| `ar` | Arabic (العربية) | Excellent | Colloquial, any dialect. Arabic script. No English except proper nouns. |
 | `tolaki` | Tolaki (Southeast Sulawesi) | Limited | Stay in Tolaki; fewer words beats any fallback. No English or Indonesian fallback. |
 | `hokkien` | Hokkien (Fujian/Taiwanese) | Moderate | Romanized (POJ/Tâi-lô). No English except proper nouns. |
 | `khek` | Hakka (Khek) | Limited | Stay in Hakka; fewer words beats any fallback. No English, Indonesian, or Mandarin fallback. |

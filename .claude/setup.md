@@ -15,14 +15,16 @@ decimator/
 │   ├── heat-3.md               # Nuclear system prompt
 │   ├── critical-rules.md       # Appended to all heat levels
 │   ├── explain.md              # /explain system prompt
+│   ├── mention.md              # @mention handler system prompt
 │   ├── lang-en.md
 │   ├── lang-id.md
 │   ├── lang-zh.md
+│   ├── lang-ar.md
 │   ├── lang-tolaki.md
 │   ├── lang-hokkien.md
 │   └── lang-khek.md
 └── src/
-    ├── index.ts                # Bot entry point, client setup, interaction handler
+    ├── index.ts                # Bot entry point, slash commands + messageCreate handler
     ├── deploy-commands.ts      # One-time script to register slash commands
     ├── config.ts               # Loads and exports env vars with validation
     ├── commands/
@@ -30,7 +32,8 @@ decimator/
     │   └── explain.ts          # /explain slash command definition + execute()
     ├── services/
     │   ├── roast-service.ts    # Claude API call, prompt construction, fallback roasts
-    │   └── explain-service.ts  # Claude API call for /explain, fallback response
+    │   ├── explain-service.ts  # Claude API call for /explain, fallback response
+    │   └── mention-service.ts  # Claude API call for @mention messages
     └── utils/
         ├── cooldown.ts         # Per-user cooldown tracker
         ├── load-prompt.ts      # Reads prompts/*.md files at startup
@@ -190,16 +193,32 @@ Work through the files in this order:
 - Call `anthropic.messages.create()` with `max_tokens: 150`
 - Fallback: `"Some things are better left unexplained. 🗿"`
 
-### 9. `src/deploy-commands.ts`
+### 9. `src/services/mention-service.ts`
+- Load `prompts/mention.md` at module init
+- Accept `message: Message` and `botId: string`
+- Strip bot mention from message content
+- Fetch replied-to message content if a reference exists
+- Collect mentioned users (excluding the bot) and their guild member context
+- Build user prompt with author context, message content, replied-to content, and target info
+- Call `anthropic.messages.create()` with `max_tokens: 200`
+- Fallback: `"…🗿"`
+
+### 10. `src/deploy-commands.ts`
 - Import all command data and register via `Routes.applicationGuildCommands()`
 - Run once with `pnpm run deploy`, re-run when command definitions change
 
-### 10. `src/index.ts`
-- Create `Client` with intents: Guilds, GuildMembers, GuildPresences
-- Attach a `commands` Collection to the client
-- Register all commands: `roast`, `explain`
+### 11. `src/index.ts`
+- Create `Client` with intents: Guilds, GuildMembers, GuildPresences, GuildMessages, MessageContent
+- Attach a `commands` Collection to the client — registers `roast`, `explain`
 - Handle `interactionCreate` → route to matching command's `execute()`
+- Handle `messageCreate`:
+  - Ignore bots
+  - Check if bot is mentioned — skip if not
+  - Check cooldown — reply with wait message if active
+  - Send typing indicator, call `handleMention()`, reply to the message
 - `client.login()`
+
+> **Discord Portal requirement**: Enable **Message Content Intent** in Bot → Privileged Gateway Intents before deploying.
 
 ---
 
