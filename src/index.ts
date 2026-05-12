@@ -1,13 +1,18 @@
-import { Client, Collection, GatewayIntentBits, Interaction } from "discord.js";
+import {
+  Client,
+  Collection,
+  GatewayIntentBits,
+  Interaction,
+  ChatInputCommandInteraction,
+} from "discord.js";
 import { config } from "./config";
 import * as roastCommand from "./commands/roast";
+import * as explainCommand from "./commands/explain";
 
 interface Command {
   data: { name: string };
   execute: (interaction: ChatInputCommandInteraction, client: Client) => Promise<unknown>;
 }
-
-import { ChatInputCommandInteraction } from "discord.js";
 
 const client = new Client({
   intents: [
@@ -19,6 +24,7 @@ const client = new Client({
 
 const commands = new Collection<string, Command>();
 commands.set(roastCommand.data.name, roastCommand);
+commands.set(explainCommand.data.name, explainCommand);
 
 client.once("ready", () => {
   console.log(`✅ Decimator online as ${client.user?.tag}`);

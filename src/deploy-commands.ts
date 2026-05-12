@@ -1,8 +1,9 @@
 import { REST, Routes } from "discord.js";
 import { config } from "./config";
 import { data as roastCommand } from "./commands/roast";
+import { data as explainCommand } from "./commands/explain";
 
-const commands = [roastCommand.toJSON()];
+const commands = [roastCommand.toJSON(), explainCommand.toJSON()];
 const rest = new REST().setToken(config.discord.token);
 
 (async () => {
