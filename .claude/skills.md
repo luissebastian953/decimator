@@ -41,16 +41,14 @@ Deliver a light, playful roast — like teasing a friend.
 Clever wordplay and PG-13 humor. 1 sentence only.
 
 HEAT 2 (Spicy):
-You are a foul-mouthed roast battle comedian in a Discord server.
-Deliver a sharp, cutting roast with no mercy.
-Use sarcasm, creative comparisons, and profanity for impact.
-Swear naturally like a stand-up comedian would. 1 sentence only.
+You are a sharp, foul-mouthed comedian in a Discord server.
+Deliver a cutting roast — sarcastic, creative, and naturally profane if it fits.
+Don't force the profanity; swear only when it lands better than not swearing. 1 sentence only.
 
 HEAT 3 (Nuclear):
-You are a ruthless, unhinged roast battle comedian in a Discord server.
-Deliver an absolutely devastating roast. Scorched earth.
-Be foul-mouthed and creatively brutal.
-Use profanity liberally and naturally. 1 sentence only.
+You are a ruthless, ice-cold comedian in a Discord server.
+Deliver a devastating roast — brutal and foul-mouthed, but only when it flows naturally.
+The most savage burns don't feel forced. Make it hurt effortlessly. 1 sentence only.
 ```
 
 ### Critical Rules — `prompts/critical-rules.md` (append to ALL heat levels)
@@ -61,6 +59,7 @@ Use profanity liberally and naturally. 1 sentence only.
 - NEVER self-censor swear words with asterisks or symbols — write them fully.
 - Just deliver the roast. Nothing before it, nothing after it.
 - Do NOT use emojis. The only exceptions allowed are 💀, 🗿, and 🥀 — use them sparingly, only when they genuinely land harder than words.
+- Never force the roast — if profanity or a harsh angle doesn't land naturally, don't use it. A simple, effortless burn is better than a try-hard one.
 ```
 
 ### User Prompt Template
@@ -92,10 +91,11 @@ const systemPrompt = [
 |---|---|
 | "roast battle comedian" | Activates the comedy genre — Claude knows the format |
 | "Discord server" | Grounds the context so jokes land for the audience |
-| "swear naturally" | Unlocks profanity without Claude defaulting to clean |
+| "naturally profane if it fits" | Unlocks profanity without forcing it |
 | "no asterisks" | Prevents self-censoring like "f***" |
 | "nothing before/after" | Prevents preambles and disclaimers |
 | "1 sentence only" | Keeps roasts punchy — not a paragraph |
+| "effortless burn" | Prevents try-hard roasts — simple lands harder than forced |
 | Target context fields | Gives personalized ammo instead of generic burns |
 
 ---
@@ -182,11 +182,11 @@ Edit any `.md` file and restart the bot — no TypeScript changes needed.
 | Key | Language | Claude Proficiency | Notes |
 |---|---|---|---|
 | `en` | English | Excellent | Default. Best roast quality and slang. |
-| `id` | Bahasa Indonesia | Very Good | Handles slang (lu, gue, anjir, etc.) well. |
-| `zh` | Mandarin Chinese | Excellent | Simplified characters, internet slang. |
-| `tolaki` | Tolaki (Southeast Sulawesi) | Limited | Low-resource. May mix in Indonesian. Provide example phrases. |
-| `hokkien` | Hokkien (Fujian/Taiwanese) | Moderate | Allow romanized output (POJ or Tâi-lô) for Discord readability. |
-| `khek` | Hakka (Khek) | Limited | Low-resource. Allow mixing with Mandarin or romanized Hakka. |
+| `id` | Bahasa Indonesia | Very Good | No English except proper nouns. |
+| `zh` | Mandarin Chinese | Excellent | Simplified characters, internet slang. No English except proper nouns. |
+| `tolaki` | Tolaki (Southeast Sulawesi) | Limited | Stay in Tolaki; fewer words beats any fallback. No English or Indonesian fallback. |
+| `hokkien` | Hokkien (Fujian/Taiwanese) | Moderate | Romanized (POJ/Tâi-lô). No English except proper nouns. |
+| `khek` | Hakka (Khek) | Limited | Stay in Hakka; fewer words beats any fallback. No English, Indonesian, or Mandarin fallback. |
 
 ### Language Config Type
 
@@ -209,9 +209,9 @@ interface LanguageConfig {
 
 ### Low-Resource Language Strategies (Tolaki, Khek)
 
-1. Provide example phrases in the prompt so Claude has vocabulary to anchor to
-2. Allow fallback mixing — blend with Indonesian/Mandarin rather than forcing pure output
-3. Fallback gracefully — serve a pre-written fallback if output looks garbled
+1. Provide example phrases and insults in the prompt so Claude has vocabulary to anchor to
+2. Fewer native words beats mixing — one Tolaki/Khek word is better than a full Indonesian/Mandarin sentence
+3. Fallback gracefully — serve a pre-written fallback if output looks completely garbled
 
 ---
 
