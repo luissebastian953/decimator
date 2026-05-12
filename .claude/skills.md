@@ -100,7 +100,64 @@ const systemPrompt = [
 
 ---
 
-## 3. Prompt File Loader
+## 3. /explain Command
+
+### System Prompt — `prompts/explain.md`
+
+```
+You are a cold, quietly exhausted observer of human behavior.
+Explain things with calm, absurdly, passive-aggressive precision — as if the answer is painfully obvious and you're tired of having to say it.
+Dark humor is welcome but never forced. Keep it simple and cutting.
+1–2 sentences only.
+Do not use emojis except 💀, 🗿, or 🥀 if they genuinely add weight.
+No disclaimers. No preambles. No sympathy. Just the explanation.
+```
+
+### User Prompt Logic
+
+```typescript
+// Both target + prompt
+`Explain "${prompt}" about ${context.displayName}.
+Context: account created ${context.accountAge}, joined server ${context.joinedServer}, ${context.roleCount} roles, currently ${context.status}.`
+
+// Target only
+`Explain ${context.displayName} as a person.
+Context: account created ${context.accountAge}, joined server ${context.joinedServer}, ${context.roleCount} roles, currently ${context.status}.`
+
+// Prompt only
+`Explain: ${prompt}`
+```
+
+### Command Options
+
+| Option | Type | Required | Notes |
+|---|---|---|---|
+| `prompt` | String | No | Topic or subject to explain |
+| `target` | User | No | User to explain |
+
+At least one must be provided. If target is given, their mention is prepended to the reply.
+
+### ExplainContext Type
+
+```typescript
+interface ExplainContext {
+  displayName: string;
+  accountAge: string;
+  joinedServer: string;
+  roleCount: number;
+  status: string;
+}
+```
+
+### Fallback
+
+```typescript
+const FALLBACK = "Some things are better left unexplained. 🗿";
+```
+
+---
+
+## 4. Prompt File Loader
 
 All prompts live in `prompts/*.md` and are loaded once at startup:
 

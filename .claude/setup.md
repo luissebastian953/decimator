@@ -14,6 +14,7 @@ decimator/
 │   ├── heat-2.md               # Spicy system prompt
 │   ├── heat-3.md               # Nuclear system prompt
 │   ├── critical-rules.md       # Appended to all heat levels
+│   ├── explain.md              # /explain system prompt
 │   ├── lang-en.md
 │   ├── lang-id.md
 │   ├── lang-zh.md
@@ -25,9 +26,11 @@ decimator/
     ├── deploy-commands.ts      # One-time script to register slash commands
     ├── config.ts               # Loads and exports env vars with validation
     ├── commands/
-    │   └── roast.ts            # /roast slash command definition + execute()
+    │   ├── roast.ts            # /roast slash command definition + execute()
+    │   └── explain.ts          # /explain slash command definition + execute()
     ├── services/
-    │   └── roast-service.ts    # Claude API call, prompt construction, fallback roasts
+    │   ├── roast-service.ts    # Claude API call, prompt construction, fallback roasts
+    │   └── explain-service.ts  # Claude API call for /explain, fallback response
     └── utils/
         ├── cooldown.ts         # Per-user cooldown tracker
         ├── load-prompt.ts      # Reads prompts/*.md files at startup
@@ -164,13 +167,37 @@ Work through the files in this order:
   7. If style is `message` → `editReply({ content: \`${target} ${roast}\` })`
   8. If style is `embed` → build `EmbedBuilder` with `${target}\n${roast}` as description, color-coded heat, victim, reason, language flag, footer → `editReply({ embeds: [embed] })`
 
-### 7. `src/deploy-commands.ts`
-- Import command data and call `Routes.applicationGuildCommands()` to register
+### 7. `src/commands/explain.ts`
+- Export `data`: SlashCommandBuilder with options:
+  - `prompt` (String, optional) — topic or subject to explain
+  - `target` (User, optional) — user to explain
+  - At least one must be provided; reply ephemeral if both are missing
+- Export `execute(interaction, client)`:
+  1. `deferReply()`
+  2. Gather target context from guild member cache if target provided
+  3. Build user prompt combining context + prompt text depending on what was provided
+  4. Call `generateExplanation(prompt, context)`
+  5. Prepend `${target}` to content if target was provided
+  6. `editReply({ content })`
+
+### 8. `src/services/explain-service.ts`
+- Load `prompts/explain.md` at module init via `loadPrompt("explain")`
+- Accept `prompt: string | null` and `context: ExplainContext | null`
+- Build user prompt based on what's provided:
+  - Both: explain `"${prompt}"` about `${displayName}` with context
+  - Context only: explain `${displayName}` as a person with context
+  - Prompt only: explain `${prompt}`
+- Call `anthropic.messages.create()` with `max_tokens: 150`
+- Fallback: `"Some things are better left unexplained. 🗿"`
+
+### 9. `src/deploy-commands.ts`
+- Import all command data and register via `Routes.applicationGuildCommands()`
 - Run once with `pnpm run deploy`, re-run when command definitions change
 
-### 8. `src/index.ts`
+### 10. `src/index.ts`
 - Create `Client` with intents: Guilds, GuildMembers, GuildPresences
 - Attach a `commands` Collection to the client
+- Register all commands: `roast`, `explain`
 - Handle `interactionCreate` → route to matching command's `execute()`
 - `client.login()`
 
