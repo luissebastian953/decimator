@@ -75,6 +75,17 @@ export const LANGUAGES: Record<string, LanguageConfig> = {
       "你存在的唯一意义就是让别人感觉自己还不错。",
     ],
   },
+  ar: {
+    key: "ar",
+    label: "العربية",
+    emoji: "🌙",
+    promptInstruction: loadPrompt("lang-ar"),
+    fallbacks: [
+      "يا ابن الـ، وجودك أكبر إهانة.",
+      "ما فيك فايدة حتى لو حاولت.",
+      "الله يعين اللي يتعامل معك.",
+    ],
+  },
 };
 
 export function getLanguage(key: string): LanguageConfig {

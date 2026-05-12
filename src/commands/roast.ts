@@ -47,7 +47,8 @@ export const data = new SlashCommandBuilder()
         { name: "Tolaki", value: "tolaki" },
         { name: "Hokkien", value: "hokkien" },
         { name: "Khek (Hakka)", value: "khek" },
-        { name: "中文 (Chinese)", value: "zh" }
+        { name: "中文 (Chinese)", value: "zh" },
+        { name: "العربية (Arabic)", value: "ar" }
       )
   )
   .addStringOption((o) =>
