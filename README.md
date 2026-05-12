@@ -30,6 +30,19 @@ Cold, passive-aggressive explanation of a topic or person.
 
 At least one of `prompt` or `target` must be provided. Both can be combined.
 
+### `@Decimator` (mention)
+
+Mention the bot in any channel — it reads the message, detects intent, and replies.
+
+```
+@Decimator roast this guy
+@Decimator roast @someone
+@Decimator explain what he said     ← reply to a message first
+@Decimator                          ← no context, dry observation
+```
+
+Responds in the same language you write in. Shares the same cooldown as `/roast`.
+
 ## Languages
 
 | Key | Language |
@@ -64,7 +77,7 @@ ROAST_COOLDOWN=30     # Seconds between roasts per user
 ### 3. Invite the bot
 
 In the [Discord Developer Portal](https://discord.com/developers/applications):
-- **Bot** tab → enable **Server Members Intent** and **Presence Intent**
+- **Bot** tab → enable **Server Members Intent**, **Presence Intent**, and **Message Content Intent**
 - **OAuth2 → URL Generator** → Scopes: `bot`, `applications.commands`
 - Permissions: Send Messages, Use Slash Commands, Embed Links
 - Open the generated URL and authorize the bot to your server
@@ -99,6 +112,7 @@ prompts/
 ├── heat-3.md          # Nuclear tone
 ├── critical-rules.md  # Applied to all heat levels
 ├── explain.md         # /explain tone
+├── mention.md         # @mention handler tone
 ├── lang-en.md
 ├── lang-id.md
 ├── lang-zh.md
