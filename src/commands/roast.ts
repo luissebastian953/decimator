@@ -119,7 +119,7 @@ export async function execute(
 
   const embed = new EmbedBuilder()
     .setColor(HEAT_COLORS[heat])
-    .setTitle("🔥 Decimator")
+    .setTitle(`🔥 ${client.user?.username ?? "Decimator"}`)
     .setDescription(`${target}\n${roast}`)
     .addFields(
       { name: "Victim", value: `${target}`, inline: true },

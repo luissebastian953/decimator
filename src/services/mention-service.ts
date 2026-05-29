@@ -12,7 +12,8 @@ function memberContext(member: GuildMember | null | undefined, fallbackName: str
   return `${member.displayName} — joined ${member.joinedAt?.toDateString() ?? "unknown"}, ${(member.roles.cache.size ?? 1) - 1} roles, status: ${member.presence?.status ?? "offline"}`;
 }
 
-export async function handleMention(message: Message, botId: string): Promise<string> {
+export async function handleMention(message: Message, botId: string, botName: string): Promise<string> {
+  const systemPrompt = MENTION_PROMPT.replace("{botName}", botName);
   const content = message.content
     .replace(new RegExp(`<@!?${botId}>`, "g"), "")
     .trim();
@@ -50,7 +51,7 @@ export async function handleMention(message: Message, botId: string): Promise<st
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
       max_tokens: 200,
-      system: MENTION_PROMPT,
+      system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
     });
 

@@ -32,7 +32,7 @@ commands.set(roastCommand.data.name, roastCommand);
 commands.set(explainCommand.data.name, explainCommand);
 
 client.once("ready", () => {
-  console.log(`✅ Decimator online as ${client.user?.tag}`);
+  console.log(`✅ ${client.user?.username} online as ${client.user?.tag}`);
 });
 
 client.on("interactionCreate", async (interaction: Interaction) => {
@@ -60,14 +60,20 @@ client.on("messageCreate", async (message: Message) => {
   if (!message.mentions.has(client.user.id)) return;
 
   const remaining = checkCooldown(message.author.id, config.roastCooldown);
+
   if (remaining > 0) {
     await message.reply(`⏳ Chill out. Try again in **${remaining}s**.`);
+
     return;
   }
 
   try {
-    if ("sendTyping" in message.channel) await message.channel.sendTyping();
-    const response = await handleMention(message, client.user.id);
+    if ("sendTyping" in message.channel) {
+      await message.channel.sendTyping();
+    }
+
+    const response = await handleMention(message, client.user.id, client.user.username);
+
     await message.reply(response);
   } catch (err) {
     console.error("[messageCreate] error:", err);
