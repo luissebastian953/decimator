@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.git/
+.env
+.obsidian/
+.claude/
+README.md
+CLAUDE.md
+Dockerfile
+.dockerignore
+docker-compose.yml

@@ -6,6 +6,9 @@
 decimator/
 ├── .env
 ├── .gitignore
+├── .dockerignore
+├── Dockerfile
+├── docker-compose.yml
 ├── package.json
 ├── tsconfig.json
 ├── eslint.config.mjs
@@ -236,18 +239,34 @@ Test with `/roast @someone reason:being annoying heat:3 lang:id` in your server.
 
 ---
 
-## Phase 5: Deploy (Railway)
+## Phase 5: Deploy (Tencent Cloud)
 
-1. Push to GitHub
-2. railway.app → New Project → Deploy from GitHub
-3. Add env vars in Railway dashboard (Variables tab)
-4. Set **Build Command**: `pnpm build`
-5. Set **Start Command**: `pnpm start`
-6. Auto-deploys on every push
+The bot is a long-running outbound WebSocket client, so it needs a persistent
+process — a Lighthouse/CVM instance running the container, not a serverless function.
 
-> **Note**: Keep build and start commands separate. Using `pnpm build && pnpm start` as the build command will hang — the bot process starts inside the build container.
+1. Add the container files at the repo root:
+   - `Dockerfile` — multi-stage: `node:22-slim` → `corepack enable` → `pnpm install --frozen-lockfile` → `pnpm build`, then a prod stage with `--prod` deps, `dist/`, and **`prompts/`** (loaded at runtime from `process.cwd()`), `CMD ["node", "dist/index.js"]`
+   - `.dockerignore` — `node_modules/`, `dist/`, `.git/`, `.env`
+   - `docker-compose.yml` — one service, `env_file: .env`, `restart: unless-stopped`, json-file log rotation
+2. Create the instance in a **Hong Kong or Singapore** region — mainland-China regions cannot reach `discord.com` or `api.anthropic.com` without an outbound proxy:
+   - Lighthouse (轻量应用服务器) with the **Docker** application image, 2 vCPU / 2 GB, or
+   - CVM with Docker + compose plugin installed
+3. SSH in, `git clone` the repo, and create `.env` on the server with all the Phase 1 vars
+4. Start it:
+   ```bash
+   docker compose up -d --build
+   docker compose logs -f
+   ```
+5. Redeploy on change: `git pull && docker compose up -d --build`
+6. Re-run `pnpm run deploy` locally whenever a slash command definition changes
+
+> **Note**: No inbound port, no security-group rule, and no load balancer — the gateway
+> connection is outbound-only. Don't put this on SCF (Serverless Cloud Function); the
+> persistent WebSocket needs a process that stays alive.
+
+**TKE / TCR (alternative):** build and `docker push ccr.ccs.tencentyun.com/<namespace>/decimator:latest`, then deploy a single-replica workload with env vars as secrets and no service/ingress.
 
 **Fly.io (alternative):**
-1. Add a `Dockerfile` (node:20-slim, copy, pnpm install, pnpm build, CMD node dist/index.js)
+1. Reuse the same `Dockerfile`
 2. `fly launch` → `fly secrets set DISCORD_TOKEN=... ANTHROPIC_API_KEY=...`
 3. `fly deploy`

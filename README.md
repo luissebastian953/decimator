@@ -124,12 +124,39 @@ prompts/
 
 ## Deployment
 
-**Railway (recommended)**
-1. Push to GitHub
-2. [railway.app](https://railway.app) → New Project → Deploy from GitHub
-3. Add env vars in the Variables tab
-4. Build command: `pnpm build` — Start command: `pnpm start`
-5. Run `pnpm run deploy` locally after each command definition change
+**Tencent Cloud — Lighthouse / CVM + Docker (recommended)**
+
+> Pick a **Hong Kong or Singapore** region. Mainland-China regions cannot reach `discord.com` or `api.anthropic.com` without an outbound proxy.
+
+1. Create a Lighthouse instance (轻量应用服务器, 2 vCPU / 2 GB is plenty) with the **Docker** application image, or a CVM with Docker installed
+2. SSH in and pull the repo:
+   ```bash
+   git clone <your-repo-url> decimator && cd decimator
+   ```
+3. Create `.env` on the server with the same vars as local (`DISCORD_TOKEN`, `DISCORD_CLIENT_ID`, `DISCORD_GUILD_ID`, `ANTHROPIC_API_KEY`, and optionally `ROAST_CHANNEL_ID`, `ROAST_COOLDOWN`)
+4. Build and run:
+   ```bash
+   docker compose up -d --build
+   docker compose logs -f          # confirm the bot logged in
+   ```
+5. Redeploy after a change:
+   ```bash
+   git pull && docker compose up -d --build
+   ```
+6. Run `pnpm run deploy` locally after each command definition change
+
+No inbound port and no security-group rule is needed — the bot is an outbound gateway
+WebSocket client, not a server. `restart: unless-stopped` brings it back after a reboot.
+
+**Tencent Cloud — TKE / Cloud Run (alternative)**
+1. Build and push to TCR (Tencent Container Registry):
+   ```bash
+   docker build -t ccr.ccs.tencentyun.com/<namespace>/decimator:latest .
+   docker push ccr.ccs.tencentyun.com/<namespace>/decimator:latest
+   ```
+2. Deploy as a single-replica workload, env vars as secrets, **no** service/ingress
+3. Do **not** use SCF (Serverless Cloud Function) — the bot holds a persistent
+   WebSocket and needs a long-running process
 
 **Fly.io**
 ```bash
